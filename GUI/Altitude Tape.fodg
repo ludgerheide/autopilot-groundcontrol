@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:ooo="http://openoffice.org/2004/office" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:rpt="http://openoffice.org/2005/report" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:officeooo="http://openoffice.org/2009/office" xmlns:tableooo="http://openoffice.org/2009/table" xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" xmlns:css3t="http://www.w3.org/TR/css3-text/" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.graphics">
- <office:meta><meta:creation-date>2015-10-16T21:43:29.993488000</meta:creation-date><dc:date>2015-10-16T23:04:34.233433000</dc:date><meta:editing-duration>PT1M39S</meta:editing-duration><meta:editing-cycles>3</meta:editing-cycles><meta:generator>LibreOffice/5.0.2.2$MacOSX_X86_64 LibreOffice_project/37b43f919e4de5eeaca9b9755ed688758a8251fe</meta:generator><meta:document-statistic meta:object-count="153"/></office:meta>
+ <office:meta><meta:creation-date>2015-10-16T21:43:29.993488000</meta:creation-date><dc:date>2018-01-09T20:01:33.159749000</dc:date><meta:editing-duration>PT3M6S</meta:editing-duration><meta:editing-cycles>4</meta:editing-cycles><meta:generator>LibreOffice/5.4.3.2$MacOSX_X86_64 LibreOffice_project/92a7159f7e4af62137622921e809f8546db437e5</meta:generator><dc:creator>Ludger Heide</dc:creator><meta:document-statistic meta:object-count="153"/></office:meta>
  <office:settings>
   <config:config-item-set config:name="ooo:view-settings">
-   <config:config-item config:name="VisibleAreaTop" config:type="int">-18185</config:config-item>
-   <config:config-item config:name="VisibleAreaLeft" config:type="int">-16699</config:config-item>
+   <config:config-item config:name="VisibleAreaTop" config:type="int">-21417</config:config-item>
+   <config:config-item config:name="VisibleAreaLeft" config:type="int">-67853</config:config-item>
    <config:config-item config:name="VisibleAreaWidth" config:type="int">37126</config:config-item>
    <config:config-item config:name="VisibleAreaHeight" config:type="int">28020</config:config-item>
    <config:config-item-map-indexed config:name="Views">
@@ -34,13 +34,11 @@
      <config:config-item config:name="IsDoubleClickTextEdit" config:type="boolean">true</config:config-item>
      <config:config-item config:name="IsClickChangeRotation" config:type="boolean">true</config:config-item>
      <config:config-item config:name="SlidesPerRow" config:type="short">4</config:config-item>
-     <config:config-item config:name="EditModeStandard" config:type="int">0</config:config-item>
-     <config:config-item config:name="EditModeNotes" config:type="int">0</config:config-item>
-     <config:config-item config:name="EditModeHandout" config:type="int">1</config:config-item>
-     <config:config-item config:name="VisibleAreaTop" config:type="int">-18185</config:config-item>
-     <config:config-item config:name="VisibleAreaLeft" config:type="int">-16699</config:config-item>
-     <config:config-item config:name="VisibleAreaWidth" config:type="int">35102</config:config-item>
-     <config:config-item config:name="VisibleAreaHeight" config:type="int">28022</config:config-item>
+     <config:config-item config:name="EditMode" config:type="int">0</config:config-item>
+     <config:config-item config:name="VisibleAreaTop" config:type="int">-21417</config:config-item>
+     <config:config-item config:name="VisibleAreaLeft" config:type="int">-67853</config:config-item>
+     <config:config-item config:name="VisibleAreaWidth" config:type="int">137309</config:config-item>
+     <config:config-item config:name="VisibleAreaHeight" config:type="int">103583</config:config-item>
      <config:config-item config:name="GridCoarseWidth" config:type="int">1000</config:config-item>
      <config:config-item config:name="GridCoarseHeight" config:type="int">1000</config:config-item>
      <config:config-item config:name="GridFineWidth" config:type="int">100</config:config-item>
@@ -51,16 +49,17 @@
      <config:config-item config:name="GridSnapWidthYDenominator" config:type="int">1</config:config-item>
      <config:config-item config:name="IsAngleSnapEnabled" config:type="boolean">false</config:config-item>
      <config:config-item config:name="SnapAngle" config:type="int">1500</config:config-item>
-     <config:config-item config:name="ZoomOnPage" config:type="boolean">false</config:config-item>
+     <config:config-item config:name="ZoomOnPage" config:type="boolean">true</config:config-item>
+     <config:config-item config:name="AnchoredTextOverflowLegacy" config:type="boolean">false</config:config-item>
     </config:config-item-map-entry>
    </config:config-item-map-indexed>
   </config:config-item-set>
   <config:config-item-set config:name="ooo:configuration-settings">
    <config:config-item config:name="ApplyUserData" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="BitmapTableURL" config:type="string">$(user)/config/standard.sob</config:config-item>
+   <config:config-item config:name="BitmapTableURL" config:type="string">$(inst)/Resources/palette%3B$(user)/config/standard.sob</config:config-item>
    <config:config-item config:name="CharacterCompressionType" config:type="short">0</config:config-item>
-   <config:config-item config:name="ColorTableURL" config:type="string">$(user)/config/standard.soc</config:config-item>
-   <config:config-item config:name="DashTableURL" config:type="string">$(user)/config/standard.sod</config:config-item>
+   <config:config-item config:name="ColorTableURL" config:type="string">$(inst)/Resources/palette%3B$(user)/config/standard.soc</config:config-item>
+   <config:config-item config:name="DashTableURL" config:type="string">$(inst)/Resources/palette%3B$(user)/config/standard.sod</config:config-item>
    <config:config-item config:name="DefaultTabStop" config:type="int">1250</config:config-item>
    <config:config-item config:name="EmbedFonts" config:type="boolean">false</config:config-item>
    <config:config-item-map-indexed config:name="ForbiddenCharacters">
@@ -72,8 +71,8 @@
      <config:config-item config:name="EndLine" config:type="string"/>
     </config:config-item-map-entry>
    </config:config-item-map-indexed>
-   <config:config-item config:name="GradientTableURL" config:type="string">$(user)/config/standard.sog</config:config-item>
-   <config:config-item config:name="HatchTableURL" config:type="string">$(user)/config/standard.soh</config:config-item>
+   <config:config-item config:name="GradientTableURL" config:type="string">$(inst)/Resources/palette%3B$(user)/config/standard.sog</config:config-item>
+   <config:config-item config:name="HatchTableURL" config:type="string">$(inst)/Resources/palette%3B$(user)/config/standard.soh</config:config-item>
    <config:config-item config:name="IsKernAsianPunctuation" config:type="boolean">false</config:config-item>
    <config:config-item config:name="IsPrintBooklet" config:type="boolean">false</config:config-item>
    <config:config-item config:name="IsPrintBookletBack" config:type="boolean">true</config:config-item>
@@ -84,7 +83,7 @@
    <config:config-item config:name="IsPrintPageName" config:type="boolean">false</config:config-item>
    <config:config-item config:name="IsPrintTilePage" config:type="boolean">false</config:config-item>
    <config:config-item config:name="IsPrintTime" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="LineEndTableURL" config:type="string">$(user)/config/standard.soe</config:config-item>
+   <config:config-item config:name="LineEndTableURL" config:type="string">$(inst)/Resources/palette%3B$(user)/config/standard.soe</config:config-item>
    <config:config-item config:name="LoadReadonly" config:type="boolean">false</config:config-item>
    <config:config-item config:name="MeasureUnit" config:type="short">3</config:config-item>
    <config:config-item config:name="PageNumberFormat" config:type="int">4</config:config-item>
@@ -107,7 +106,6 @@
   </office:script>
  </office:scripts>
  <office:font-face-decls>
-  <style:font-face style:name="Liberation Sans1" svg:font-family="&apos;Liberation Sans&apos;" style:font-family-generic="modern" style:font-pitch="variable"/>
   <style:font-face style:name="Monaco" svg:font-family="Monaco" style:font-family-generic="modern" style:font-pitch="variable"/>
   <style:font-face style:name="Liberation Sans" svg:font-family="&apos;Liberation Sans&apos;" style:font-family-generic="roman" style:font-pitch="variable"/>
   <style:font-face style:name="Liberation Serif" svg:font-family="&apos;Liberation Serif&apos;" style:font-family-generic="roman" style:font-pitch="variable"/>
@@ -118,7 +116,7 @@
   <draw:marker draw:name="Arrow" svg:viewBox="0 0 20 30" svg:d="M10 0l-10 30h20z"/>
   <style:default-style style:family="graphic">
    <style:graphic-properties svg:stroke-color="#3465a4" draw:fill-color="#729fcf" fo:wrap-option="no-wrap"/>
-   <style:paragraph-properties style:text-autospace="ideograph-alpha" style:punctuation-wrap="simple" style:line-break="strict" style:writing-mode="lr-tb" style:font-independent-line-spacing="false">
+   <style:paragraph-properties style:text-autospace="ideograph-alpha" style:punctuation-wrap="simple" style:line-break="strict" style:font-independent-line-spacing="false">
     <style:tab-stops/>
    </style:paragraph-properties>
    <style:text-properties style:use-window-font-color="true" style:font-name="Liberation Serif" fo:font-size="24pt" fo:language="de" fo:country="DE" style:font-name-asian="Tahoma" style:font-size-asian="24pt" style:language-asian="zh" style:country-asian="CN" style:font-name-complex="Tahoma" style:font-size-complex="24pt" style:language-complex="hi" style:country-complex="IN"/>
@@ -237,14 +235,14 @@
    <style:page-layout-properties fo:margin-top="0cm" fo:margin-bottom="0cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:page-width="1.75cm" fo:page-height="100cm" style:print-orientation="portrait"/>
   </style:page-layout>
   <style:style style:name="dp1" style:family="drawing-page">
-   <style:drawing-page-properties draw:background-size="border" draw:fill="none"/>
+   <style:drawing-page-properties draw:background-size="border" draw:fill="solid" draw:fill-color="#000000"/>
   </style:style>
   <style:style style:name="dp2" style:family="drawing-page"/>
   <style:style style:name="gr1" style:family="graphic" style:parent-style-name="objectwithoutfill">
-   <style:graphic-properties svg:stroke-width="0.035cm" draw:marker-start-width="0.252cm" draw:marker-end-width="0.252cm" draw:fill="none" draw:textarea-vertical-align="middle" fo:padding-top="0.142cm" fo:padding-bottom="0.142cm" fo:padding-left="0.267cm" fo:padding-right="0.267cm"/>
+   <style:graphic-properties svg:stroke-width="0.035cm" svg:stroke-color="#ffffff" draw:marker-start-width="0.252cm" draw:marker-end-width="0.252cm" draw:fill="none" draw:textarea-vertical-align="middle" fo:padding-top="0.142cm" fo:padding-bottom="0.142cm" fo:padding-left="0.267cm" fo:padding-right="0.267cm"/>
   </style:style>
   <style:style style:name="gr2" style:family="graphic" style:parent-style-name="objectwithoutfill">
-   <style:graphic-properties svg:stroke-width="0.071cm" draw:marker-start-width="0.306cm" draw:marker-end-width="0.306cm" draw:fill="none" draw:textarea-vertical-align="middle" fo:padding-top="0.16cm" fo:padding-bottom="0.16cm" fo:padding-left="0.285cm" fo:padding-right="0.285cm"/>
+   <style:graphic-properties svg:stroke-width="0.071cm" svg:stroke-color="#ffffff" draw:marker-start-width="0.306cm" draw:marker-end-width="0.306cm" draw:fill="none" draw:textarea-vertical-align="middle" fo:padding-top="0.16cm" fo:padding-bottom="0.16cm" fo:padding-left="0.285cm" fo:padding-right="0.285cm"/>
   </style:style>
   <style:style style:name="gr3" style:family="graphic" style:parent-style-name="standard">
    <style:graphic-properties draw:stroke="none" svg:stroke-color="#000000" draw:fill="none" draw:fill-color="#ffffff" draw:textarea-horizontal-align="left" draw:auto-grow-height="true" draw:auto-grow-width="false" fo:min-height="0.704cm" fo:min-width="0cm"/>
@@ -259,19 +257,21 @@
   </style:style>
   <style:style style:name="P3" style:family="paragraph">
    <style:paragraph-properties fo:text-align="end"/>
+   <style:text-properties fo:color="#ffffff"/>
   </style:style>
   <style:style style:name="P4" style:family="paragraph">
    <loext:graphic-properties draw:fill="none" draw:fill-color="#ffffff"/>
    <style:paragraph-properties fo:text-align="end"/>
-   <style:text-properties style:font-name="Monaco" fo:font-size="16pt" style:font-size-asian="16pt" style:font-size-complex="16pt"/>
+   <style:text-properties fo:color="#ffffff" style:font-name="Monaco" fo:font-size="16pt" style:font-size-asian="16pt" style:font-size-complex="16pt"/>
   </style:style>
   <style:style style:name="P5" style:family="paragraph">
    <style:paragraph-properties fo:text-align="start"/>
+   <style:text-properties fo:color="#ffffff"/>
   </style:style>
   <style:style style:name="P6" style:family="paragraph">
    <loext:graphic-properties draw:fill="none" draw:fill-color="#ffffff"/>
    <style:paragraph-properties fo:text-align="start"/>
-   <style:text-properties style:font-name="Monaco" fo:font-size="16pt" style:font-size-asian="16pt" style:font-size-complex="16pt"/>
+   <style:text-properties fo:color="#ffffff" style:font-name="Monaco" fo:font-size="16pt" style:font-size-asian="16pt" style:font-size-complex="16pt"/>
   </style:style>
   <style:style style:name="T1" style:family="text">
    <style:text-properties style:font-name="Monaco" fo:font-size="16pt" style:font-size-asian="16pt" style:font-size-complex="16pt"/>
@@ -400,7 +400,7 @@
       <text:p text:style-name="P3"><text:span text:style-name="T1">400</text:span></text:p>
      </draw:text-box>
     </draw:frame>
-    <draw:frame draw:style-name="gr3" draw:text-style-name="P4" draw:layer="layout" svg:width="1.725cm" svg:height="0.954cm" svg:x="0.4cm" svg:y="17.523cm">
+    <draw:frame draw:style-name="gr3" draw:text-style-name="P6" draw:layer="layout" svg:width="1.725cm" svg:height="0.954cm" svg:x="0.4cm" svg:y="17.523cm">
      <draw:text-box>
       <text:p text:style-name="P5"><text:span text:style-name="T1">410</text:span></text:p>
      </draw:text-box>
