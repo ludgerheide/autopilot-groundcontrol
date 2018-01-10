@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "ORSSerial/ORSSerialPort.h"
+#import "CommunicationProtocol.pbobjc.h"
 
 @protocol attitudeDelegate <NSObject>
 @required
@@ -25,7 +26,7 @@
 
 @protocol controllerDelegate <NSObject>
 @required
--(void) controllerChangedWithPitch: (NSNumber*) pitch yaw: (NSNumber*) yaw thrust: (NSNumber*) thrust;
+-(void) controllerUpdate: (DroneMessage_CommandUpdate*) update;
 @end
 
 @protocol batteryDelegate <NSObject>

@@ -10,6 +10,7 @@
 #import <CoreImage/CoreImage.h>
 #import <OpenGL/OpenGL.h>
 #import <OpenGL/gl.h>
+#import "CommunicationProtocol.pbobjc.h"
 
 #define MIN_SPEED 0
 #define MAX_SPEED 100.0
@@ -21,13 +22,15 @@
 
 @interface PFDViewController ()
 {
-    IBOutlet NSImageView* view_speedTape;
-    IBOutlet NSTextField *label_Speed;
-    IBOutlet NSImageView* view_altitudeTape;
-    IBOutlet NSTextFieldCell *label_Altitude;
-    IBOutlet NSTextField *label_heading;
-    IBOutlet NSTextField *label_status;
-    IBOutlet NSImageView *view_horizon;
+    __weak IBOutlet NSImageView* view_speedTape;
+    __weak IBOutlet NSTextField *label_Speed;
+    __weak IBOutlet NSImageView* view_altitudeTape;
+    __weak IBOutlet NSTextFieldCell *label_Altitude;
+    __weak IBOutlet NSTextField *label_heading;
+    __weak IBOutlet NSTextField *label_hnavStatus;
+    __weak IBOutlet NSTextField *label_vnavStatus;
+    __weak IBOutlet NSTextField *label_thrustStatus;
+    __weak IBOutlet NSImageView *view_horizon;
     
     IBOutlet NSTextField* label_controller;
     NSNumber* pitch;
@@ -73,10 +76,51 @@
 @synthesize roll;
 
 @synthesize heading;
-
 -(void) setHeading: (NSNumber*) theHeading {
     heading = theHeading;
     [self updateHeading];
+}
+
+@synthesize myThrustMode;
+-(void)setMyThrustMode:(ThrustMode) theThrustMode {
+    myThrustMode = theThrustMode;
+    [self updateThrustLabel];
+}
+
+@synthesize targetSpeed;
+-(void)setTargetSpeed:(NSNumber *)theTargetSpeed {
+    targetSpeed = theTargetSpeed;
+    [self updateThrustLabel];
+}
+
+@synthesize hnavMode;
+-(void)setHnavMode:(HorizontalMode)theHnavMode {
+    hnavMode = theHnavMode;
+    [self updateHnavLabel];
+}
+
+@synthesize targetHeading;
+- (void)setTargetHeading:(NSNumber *)theTargetHeading {
+    targetHeading = theTargetHeading;
+    [self updateHnavLabel];
+}
+
+@synthesize vnavMode;
+- (void)setVnavMode:(VerticalMode)theVnavMode {
+    vnavMode = theVnavMode;
+    [self updateVnavLabel];
+}
+
+@synthesize targetAltitude;
+- (void)setTargetAltitude:(NSNumber *)theAltitude {
+    altitude = theAltitude;
+    [self updateVnavLabel];
+}
+
+@synthesize targetRateOfClimb;
+- (void)setTargetRateOfClimb:(NSNumber *)theTargetRateOfClimb {
+    targetRateOfClimb = theTargetRateOfClimb;
+    [self updateVnavLabel];
 }
 
 - (void)viewDidLoad {
@@ -112,6 +156,17 @@
     tiffData = [img_mask TIFFRepresentation];
     bitmap = [NSBitmapImageRep imageRepWithData:tiffData];
     ci_mask = [[CIImage alloc] initWithBitmapImageRep:bitmap];
+
+    //Initialize the control input modes to sane values
+    myThrustMode = PASSTHROUGH_THRUST;
+    targetSpeed = [NSNumber numberWithInteger: -1];
+
+    hnavMode = PASSTHROUGH_HORIZONTAL;
+    targetHeading = [NSNumber numberWithInteger: -1];
+
+    vnavMode = PASSTHROUGH_VERTICAL;
+    targetAltitude = [NSNumber numberWithInteger: -1];
+    targetRateOfClimb = [NSNumber numberWithInteger: -1];
 }
 
 - (void) updateSpeedTape {
@@ -121,7 +176,7 @@
         //Copy a portion (or the whole) from the source image so that the middle is at the correct speed
         NSRect destRect = NSMakeRect(0, 0, rendered_speedTape.size.width, rendered_speedTape.size.height);
         
-        //Get the y-location of the target speed on the speed tape
+        //Get the y-location of the actual speed on the speed tape
         CGFloat scalingFactor = rendered_speedTape.size.width / img_speedTape.size.width;
         
         CGFloat requiredOffsetFromBottom = (img_speedTape.size.height/MAX_SPEED) * speed.doubleValue;
@@ -298,26 +353,170 @@
 }
 
 //Method for ControllerDelegate
--(void) controllerChangedWithPitch: (NSNumber*) thePitch yaw: (NSNumber*) theYaw thrust: (NSNumber*) theThrust {
-    pitch = thePitch;
-    yaw = theYaw;
-    thrust = theThrust;
-    [self updateControllerText];
-}
-
--(void) updateControllerText {
+- (void)controllerUpdate:(DroneMessage_CommandUpdate *)update {
     NSString* controllerString;
-    if(pitch && yaw && thrust) {
-        controllerString = [NSString stringWithFormat: @"P: %+03.0f, Y: %+03.0f, T: %+03.0f", pitch.doubleValue*100, yaw.doubleValue*100, thrust.doubleValue*100];
+
+    if(update != nil) {
+    //Yaw
+    switch (update.horizontalCommandOneOfCase) {
+        case DroneMessage_CommandUpdate_HorizontalCommand_OneOfCase_Heading:
+            [self setHnavMode: HEADING];
+            [self setTargetHeading: [NSNumber numberWithDouble: update.heading/64.0]];
+            controllerString = [NSString stringWithFormat: @"HDG: %3.0f ", self.heading.doubleValue];
+            break;
+
+        case DroneMessage_CommandUpdate_HorizontalCommand_OneOfCase_RateOfTurn:
+            [self setHnavMode: RATE_OF_TURN];
+            controllerString = [NSString stringWithFormat: @"TRN: %3.0f ", (100.0/127) * update.rateOfTurn];
+            break;
+
+        case DroneMessage_CommandUpdate_HorizontalCommand_OneOfCase_GPBUnsetOneOfCase:
+            NSLog(@"Invalid message received in PFDViewController: No HNAV");
+            break;
+        default:
+            break;
+    }
+
+    //Pitch
+    switch (update.verticalCommandOneOfCase) {
+            case DroneMessage_CommandUpdate_VerticalCommand_OneOfCase_Altitude:
+            [self setVnavMode: ALTITUDE];
+            [self setTargetAltitude: [NSNumber numberWithDouble: update.altitude/100.0]];
+            controllerString = [NSString stringWithFormat: @"%@ ALT: %3.0f ", controllerString, self.targetAltitude.doubleValue];
+            break;
+
+        case DroneMessage_CommandUpdate_VerticalCommand_OneOfCase_RateOfClimb:
+            [self setVnavMode: RATE_OF_CLIMB];
+            [self setTargetRateOfClimb: [NSNumber numberWithDouble: update.rateOfClimb/100.0]];
+            controllerString = [NSString stringWithFormat: @"%@ V/S: %3.0f ", controllerString, self.targetRateOfClimb.doubleValue];
+            break;
+
+        case DroneMessage_CommandUpdate_VerticalCommand_OneOfCase_PitchAngle:
+            [self setVnavMode: PITCH_ANGLE];
+            controllerString = [NSString stringWithFormat: @"%@ PIT: %3.0f ", controllerString, (100.0/127) * update.pitchAngle];
+            break;
+
+        case DroneMessage_CommandUpdate_HorizontalCommand_OneOfCase_GPBUnsetOneOfCase:
+            NSLog(@"Invalid message received in PFDViewController: No VNAV");
+            break;
+        default:
+            break;
+    }
+
+    //Thrust
+    switch (update.speedCommandOneOfCase) {
+        case DroneMessage_CommandUpdate_SpeedCommand_OneOfCase_Speed:
+            [self setMyThrustMode: SPEED];
+            [self setTargetSpeed: [NSNumber numberWithDouble: update.speed / 27.77777777]]; //Convert back from cm/s to km/h
+            controllerString = [NSString stringWithFormat: @"%@ SPD: %3.0f ", controllerString, self.targetSpeed.doubleValue];
+            break;
+
+        case DroneMessage_CommandUpdate_SpeedCommand_OneOfCase_Throttle:
+            [self setMyThrustMode: PASSTHROUGH_THRUST];
+            controllerString = [NSString stringWithFormat: @"%@ THR: %3.0f ", controllerString, update.throttle*(100/255.0)];
+            break;
+
+        case DroneMessage_CommandUpdate_HorizontalCommand_OneOfCase_GPBUnsetOneOfCase:
+            NSLog(@"Invalid message received in PFDViewController: No Thrust");
+            break;
+        default:
+            break;
+    }
         label_controller.textColor = [NSColor whiteColor];
     } else {
         controllerString = @"No Controller!";
         label_controller.textColor = [NSColor redColor];
     }
+
     label_controller.stringValue = controllerString;
     CGFloat fontSize = view_speedTape.bounds.size.width / 6;
     NSFont* theFont = [NSFont fontWithDescriptor: [NSFontDescriptor fontDescriptorWithName: @"Monaco" size: fontSize] size: fontSize];
     label_controller.font = theFont;
+}
+
+-(void) updateVnavLabel {
+    NSString *firstLine, *secondLine;
+    NSColor* color;
+    switch (vnavMode) {
+        case PITCH_ANGLE:
+        case PASSTHROUGH_VERTICAL:
+            firstLine = @"ALT";
+            secondLine = [NSString stringWithFormat: @"%.0f", targetAltitude.doubleValue];
+            color = [NSColor cyanColor];
+            break;
+
+        case ALTITUDE:
+            firstLine = @"ALT";
+            secondLine = [NSString stringWithFormat: @"%.0f", targetAltitude.doubleValue];
+            color = [NSColor greenColor];
+            break;
+
+        case RATE_OF_CLIMB:
+            firstLine = @"V/S";
+            secondLine = [NSString stringWithFormat: @"%.0f", targetRateOfClimb.doubleValue];
+            color = [NSColor greenColor];
+            break;
+
+        default:
+            break;
+    }
+    label_vnavStatus.stringValue = [NSString stringWithFormat: @"%@\n%@", firstLine, secondLine];
+    label_vnavStatus.textColor = color;
+    CGFloat fontSize = view_speedTape.bounds.size.width / 3;
+    NSFont* theFont = [NSFont fontWithDescriptor: [NSFontDescriptor fontDescriptorWithName: @"Monaco" size: fontSize] size: fontSize];
+    label_vnavStatus.font = theFont;
+}
+
+-(void) updateHnavLabel {
+    NSString *firstLine, *secondLine;
+    NSColor* color;
+    switch (hnavMode) {
+        case PASSTHROUGH_HORIZONTAL:
+            firstLine = @"HDG";
+            secondLine = [NSString stringWithFormat: @"%.0f", targetHeading.doubleValue];
+            color = [NSColor cyanColor];
+            break;
+
+        case HEADING:
+            firstLine = @"HDG";
+            secondLine = [NSString stringWithFormat: @"%.0f", targetHeading.doubleValue];
+            color = [NSColor greenColor];
+            break;
+
+        default:
+            break;
+    }
+    label_hnavStatus.stringValue = [NSString stringWithFormat: @"%@ | %@", firstLine, secondLine];
+    label_hnavStatus.textColor = color;
+    CGFloat fontSize = view_speedTape.bounds.size.width / 3;
+    NSFont* theFont = [NSFont fontWithDescriptor: [NSFontDescriptor fontDescriptorWithName: @"Monaco" size: fontSize] size: fontSize];
+    label_hnavStatus.font = theFont;
+}
+
+-(void) updateThrustLabel {
+    NSString *firstLine, *secondLine;
+    NSColor* color;
+    switch (myThrustMode) {
+        case PASSTHROUGH_THRUST:
+            firstLine = @"A/T";
+            secondLine = [NSString stringWithFormat: @"%.0f", targetSpeed.doubleValue];
+            color = [NSColor cyanColor];
+            break;
+
+        case SPEED:
+            firstLine = @"A/T";
+            secondLine = [NSString stringWithFormat: @"%.0f", targetSpeed.doubleValue];
+            color = [NSColor greenColor];
+            break;
+
+        default:
+            break;
+    }
+    label_thrustStatus.stringValue = [NSString stringWithFormat: @"%@\n%@", firstLine, secondLine];
+    label_thrustStatus.textColor = color;
+    CGFloat fontSize = view_speedTape.bounds.size.width / 3;
+    NSFont* theFont = [NSFont fontWithDescriptor: [NSFontDescriptor fontDescriptorWithName: @"Monaco" size: fontSize] size: fontSize];
+    label_thrustStatus.font = theFont;
 }
 
 //Method for batteryDelegate
@@ -380,7 +579,10 @@
     [self updateAltitudeTape];
     [self updateHorizon];
     [self updateHeading];
-    [self updateControllerText];
     [self updateBatteryText];
+
+    [self updateHnavLabel];
+    [self updateVnavLabel];
+    [self updateThrustLabel];
 }
 @end

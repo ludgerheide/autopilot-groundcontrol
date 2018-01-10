@@ -97,27 +97,23 @@
 
 //This method collects a sample from the XBox controller and sends it to the drine
 - (void) sendControllerSample: (NSTimer*) theTimer {
-    commandSet cs = [controllerModel getValues];
+    DroneMessage_CommandUpdate* update = [controllerModel getValues];
     
     if(controllerDelegate) {
-        NSNumber* pitch = [NSNumber numberWithDouble: cs.elevator];
-        NSNumber* yaw = [NSNumber numberWithDouble: cs.rudder];
-        NSNumber* thrust = [NSNumber numberWithDouble: cs.thrust];
-        
-        [controllerDelegate controllerChangedWithPitch: pitch yaw: yaw thrust: thrust];
+        [controllerDelegate controllerUpdate: update];
     }
     
     //Create a protobuf with this stuff and send it
     DroneMessage* msg = [[DroneMessage alloc] init];
     
-     //TODO: Code here ;)
+    msg.currentCommand = update;
     
     XBeeMessage* xBeeMsg = [[XBeeMessage alloc] initWithPayload: msg.data];
     
     xBeeMsg.shouldAck = false;
     xBeeMsg.frameID = 0x00;
     
-    [myPort sendData: xBeeMsg.encodeMessage];
+    //[myPort sendData: xBeeMsg.encodeMessage];
 }
 
 //This method gets RSSI from the local and remite stations and sends them to the delgate

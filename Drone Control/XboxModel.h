@@ -8,18 +8,40 @@
 
 #import <Foundation/Foundation.h>
 #import "Xbox360ControllerManager/Xbox360ControllerDelegate.h"
+#import "CommunicationProtocol.pbobjc.h"
 
-//The struct that contains elevator, rudder and thrust
-typedef struct {
-    BOOL x_pressed;
-    double elevator;
-    double rudder;
-    double thrust;
-} commandSet;
+typedef enum {
+    PASSTHROUGH_VERTICAL,
+    PITCH_ANGLE,
+    RATE_OF_CLIMB,
+    ALTITUDE
+} VerticalMode;
+
+typedef enum {
+    PASSTHROUGH_HORIZONTAL,
+    RATE_OF_TURN,
+    HEADING
+} HorizontalMode;
+
+typedef enum {
+    PASSTHROUGH_THRUST,
+    SPEED
+} ThrustMode;
 
 @interface XboxModel : NSObject <Xbox360ControllerDelegate>
 
--(commandSet) getValues;
+@property VerticalMode vnavMode;
+@property double targetRateOfClimb;
+@property double targetAltitude;
+
+@property HorizontalMode hnavMode;
+@property double targetHeading;
+
+@property ThrustMode myThrustMode;
+@property double targetSpeed;
+
+-(DroneMessage_CommandUpdate*) getValues;
+-(void) updateVnavHnavFromRightStick;
 
 //Delegate methods
 // Digipad up button events
@@ -33,6 +55,24 @@ typedef struct {
 
 // Digipad right button events
 -(void)buttonRightPressed;
+
+// A-button events
+-(void)buttonAPressed;
+
+// B-button events
+-(void)buttonBPressed;
+
+// X-button events
+-(void)buttonXPressed;
+
+// Y-button events
+-(void)buttonYPressed;
+
+// Left shoulder button events
+-(void)buttonLeftShoulderPressed;
+
+// Right shoulder button events
+-(void)buttonRightShoulderPressed;
 
 
 @end
