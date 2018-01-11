@@ -27,7 +27,7 @@
 
 //VNAV ranges
 const double minTargetRateOfClimb = -5; //m/s
-const double maxTargetRateOfClimb = -5; //m/s
+const double maxTargetRateOfClimb = 5; //m/s
 
 const double minTargetAltitude = -418; //m
 const double maxTargetAltitude = 10000; //m
@@ -50,6 +50,8 @@ const double defaultTargetSpeed = 30; //km/h
     double lastLeftShoulderTime, lastRightShoulderTime;
     int leftShoulderScale, rightShoulderScale;
 }
+
+@synthesize controllerDelegate;
 
 @synthesize vnavMode;
 @synthesize targetRateOfClimb;
@@ -79,6 +81,9 @@ const double defaultTargetSpeed = 30; //km/h
         vnavMode = PITCH_ANGLE;
         myThrustMode = PASSTHROUGH_THRUST;
 
+        targetSpeed = defaultTargetSpeed;
+        targetAltitude = defaultTargetAltitude;
+        targetRateOfClimb = 0;
 
         vnavHnavPollTimer = [NSTimer scheduledTimerWithTimeInterval: VNAV_HNAV_UPDATE_INTERVAL target: self selector: @selector(updateVnavHnavFromRightStick) userInfo:nil repeats: YES];
     }
@@ -92,6 +97,9 @@ const double defaultTargetSpeed = 30; //km/h
     if(fabs(theController.rightStickX) >= rightAnalogStickDeadzone) {
         targetHeading += rightAnalogstickGain * theController.rightStickX * fabs(theController.rightStickX);
         targetHeading = fmod(targetHeading, 360);
+        if(targetHeading < 0) {
+            targetHeading += 360;
+        }
     }
 
     if(fabs(theController.rightStickY) >= rightAnalogStickDeadzone) {
@@ -99,7 +107,7 @@ const double defaultTargetSpeed = 30; //km/h
             case PASSTHROUGH_VERTICAL:
             case PITCH_ANGLE:
             case ALTITUDE:
-                targetAltitude += rightAnalogstickGain * theController.rightStickY*fabs(theController.rightStickY);
+                targetAltitude += -0.33 * rightAnalogstickGain * theController.rightStickY*fabs(theController.rightStickY);
                 if(targetAltitude > maxTargetAltitude) {
                     targetAltitude = maxTargetAltitude;
                 } else if (targetAltitude < minTargetAltitude) {
@@ -108,7 +116,7 @@ const double defaultTargetSpeed = 30; //km/h
                 break;
 
             case RATE_OF_CLIMB:
-                targetRateOfClimb += 0.01 * rightAnalogstickGain * theController.rightStickY*fabs(theController.rightStickY);
+                targetRateOfClimb += -0.05 * rightAnalogstickGain * theController.rightStickY*fabs(theController.rightStickY);
                 if(targetRateOfClimb > maxTargetRateOfClimb) {
                     targetRateOfClimb = maxTargetRateOfClimb;
                 } else if (targetRateOfClimb < minTargetRateOfClimb) {
@@ -124,24 +132,47 @@ const double defaultTargetSpeed = 30; //km/h
 
 -(DroneMessage_CommandUpdate*) getValues {
     DroneMessage_CommandUpdate* retVal = [[DroneMessage_CommandUpdate alloc] init];
+    //First, get the sampled from the sticks
+    double targetRateOfTurn = theController.leftStickX;
+    if(fabs(targetRateOfTurn) <= DEADZONE_SIZE) {
+        targetRateOfTurn = 0;
+    }
 
+    targetRateOfTurn += (TRIM_RANGE * rudderTrim);
+
+    if(targetRateOfTurn > MAX_RUDDER) {
+        targetRateOfTurn = MAX_RUDDER;
+    } else if (targetRateOfTurn < -MAX_RUDDER) {
+        targetRateOfTurn = -MAX_RUDDER;
+    }
+
+    double targetPitch = theController.leftStickY;
+    if(fabs(targetPitch) <= DEADZONE_SIZE) {
+        targetPitch = 0;
+    }
+
+    targetPitch += (TRIM_RANGE * elevatorTrim);
+
+    if(targetPitch > MAX_ELEVATOR) {
+        targetPitch = MAX_ELEVATOR;
+    } else if (targetPitch < -MAX_ELEVATOR) {
+        targetPitch = -MAX_ELEVATOR;
+    }
+
+    double thrust = theController.rightTrigger;
+    if(thrust > 1.0) {
+        thrust = 1.0;
+    } else if (thrust < -0.0) {
+        thrust = 0.0;
+    }
+
+    //Then, create the DroneMessage
     //Yaw
     switch (hnavMode) {
         case RATE_OF_TURN:
         {
-            double rudder = theController.leftStickX;
-            if(fabs(rudder) <= DEADZONE_SIZE) {
-                rudder = 0;
-            }
 
-            rudder += (TRIM_RANGE * rudderTrim);
-
-            if(rudder > MAX_RUDDER) {
-                rudder = MAX_RUDDER;
-            } else if (rudder < -MAX_RUDDER) {
-                rudder = -MAX_RUDDER;
-            }
-            retVal.rateOfTurn = 127*rudder;
+            retVal.rateOfTurn = 127*targetRateOfTurn;
         }
             break;
 
@@ -159,19 +190,8 @@ const double defaultTargetSpeed = 30; //km/h
     switch (vnavMode)  {
         case PITCH_ANGLE:
         {
-            double pitch = theController.leftStickY;
-            if(fabs(pitch) <= DEADZONE_SIZE) {
-                pitch = 0;
-            }
 
-            pitch += (TRIM_RANGE * elevatorTrim);
-
-            if(pitch > MAX_ELEVATOR) {
-                pitch = MAX_ELEVATOR;
-            } else if (pitch < -MAX_ELEVATOR) {
-                pitch = -MAX_ELEVATOR;
-            }
-            retVal.pitchAngle = 127*pitch;
+            retVal.pitchAngle = 127*targetPitch;
         }
             break;
 
@@ -195,12 +215,6 @@ const double defaultTargetSpeed = 30; //km/h
     switch (myThrustMode) {
         case PASSTHROUGH_THRUST:
         {
-            double thrust = theController.rightTrigger;
-            if(thrust > 1.0) {
-                thrust = 1.0;
-            } else if (thrust < -0.0) {
-                thrust = 0.0;
-            }
             retVal.throttle = round(255*thrust);
         }
             break;
@@ -214,6 +228,13 @@ const double defaultTargetSpeed = 30; //km/h
         default:
             break;
     }
+
+    if(controllerDelegate != nil) {
+        [controllerDelegate controllerChangeToHnav: hnavMode rateOfTurn: [NSNumber numberWithDouble: targetRateOfTurn]  heading: [NSNumber numberWithDouble: targetHeading]];
+        [controllerDelegate controllerChangedToVnav: vnavMode pitch: [NSNumber numberWithDouble: targetPitch] climbRate: [NSNumber numberWithDouble: targetRateOfClimb] altitude: [NSNumber numberWithDouble: targetAltitude]];
+        [controllerDelegate controllerChangedToThrust: myThrustMode thrustSetting: [NSNumber numberWithDouble:thrust] speed: [NSNumber numberWithDouble: targetSpeed]];
+    }
+
     return retVal;
 }
 
@@ -319,9 +340,9 @@ const double defaultTargetSpeed = 30; //km/h
 // Left shoulder button events
 -(void)buttonLeftShoulderPressed {
     //Do it faster if we pressed the button a lot in the last second
-    double now = [[NSDate date] timeIntervalSince1970] * 1000;
+    double now = [[NSDate date] timeIntervalSince1970];
 
-    if(now - lastLeftShoulderTime < 1) {
+    if(now - lastLeftShoulderTime < 0.5) {
         leftShoulderScale = leftShoulderScale*2;
     } else {
         leftShoulderScale = 1;
@@ -337,9 +358,9 @@ const double defaultTargetSpeed = 30; //km/h
 // Right shoulder button events
 -(void)buttonRightShoulderPressed {
     //Do it faster if we pressed the button a lot in the last second
-    double now = [[NSDate date] timeIntervalSince1970] * 1000;
+    double now = [[NSDate date] timeIntervalSince1970];
 
-    if(now -lastRightShoulderTime < 1) {
+    if(now -lastRightShoulderTime < 0.5) {
         rightShoulderScale = rightShoulderScale*2;
     } else {
         rightShoulderScale = 1;

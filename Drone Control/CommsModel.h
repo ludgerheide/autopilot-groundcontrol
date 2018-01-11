@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "ORSSerial/ORSSerialPort.h"
 #import "CommunicationProtocol.pbobjc.h"
+#import "XboxModel.h"
 
 @protocol attitudeDelegate <NSObject>
 @required
@@ -22,13 +23,6 @@
 -(void) altitudeChanged: (NSNumber*) altitude;
 @end
 
-
-
-@protocol controllerDelegate <NSObject>
-@required
--(void) controllerUpdate: (DroneMessage_CommandUpdate*) update;
-@end
-
 @protocol batteryDelegate <NSObject>
 @required
 - (void) batteryChangedToVoltage: (NSNumber*) voltage current: (NSNumber*) current;
@@ -39,9 +33,10 @@
 
 @interface CommsModel : NSObject <ORSSerialPortDelegate>
 
+@property XboxModel* controllerModel;
+
 @property (weak) id<attitudeDelegate> attitudeDelegate;
 @property (weak) id<positionDelegate> positionDelegate;
-@property (weak) id<controllerDelegate> controllerDelegate;
 @property (weak) id<batteryDelegate> batteryDelegate;
 
 //This method invalidates the Attitude and map view when the timeout is exceeded

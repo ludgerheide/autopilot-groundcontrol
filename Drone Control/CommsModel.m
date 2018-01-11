@@ -14,7 +14,6 @@
 #import "CommsModel.h"
 #import "XBeeMessage.h"
 #import "CommunicationProtocol.pbobjc.h"
-#import "XboxModel.h"
 #import <Cocoa/Cocoa.h>
 
 @implementation CommsModel
@@ -22,17 +21,17 @@
     ORSSerialPort* myPort;
     
     NSMutableData* receivedData;
-    
-    XboxModel* controllerModel;
+
     
     NSTimer* instrumentTimeoutTimer;
     NSTimer* controllerPollTimer;
     NSTimer* rssiPollTimer;
 }
 
+@synthesize controllerModel;
+
 @synthesize attitudeDelegate;
 @synthesize positionDelegate;
-@synthesize controllerDelegate;
 @synthesize batteryDelegate;
 
 
@@ -98,10 +97,6 @@
 //This method collects a sample from the XBox controller and sends it to the drine
 - (void) sendControllerSample: (NSTimer*) theTimer {
     DroneMessage_CommandUpdate* update = [controllerModel getValues];
-    
-    if(controllerDelegate) {
-        [controllerDelegate controllerUpdate: update];
-    }
     
     //Create a protobuf with this stuff and send it
     DroneMessage* msg = [[DroneMessage alloc] init];

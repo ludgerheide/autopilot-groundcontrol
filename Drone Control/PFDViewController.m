@@ -52,6 +52,7 @@
     CIImage* ci_mask;
 
     NSNumber* localRssi, *remoteRssi, *dutyCycle;
+    NSString* controllerStrings[3];
 }
 
 @end
@@ -113,7 +114,7 @@
 
 @synthesize targetAltitude;
 - (void)setTargetAltitude:(NSNumber *)theAltitude {
-    altitude = theAltitude;
+    targetAltitude = theAltitude;
     [self updateVnavLabel];
 }
 
@@ -167,6 +168,10 @@
     vnavMode = PASSTHROUGH_VERTICAL;
     targetAltitude = [NSNumber numberWithInteger: -1];
     targetRateOfClimb = [NSNumber numberWithInteger: -1];
+
+    controllerStrings[0] = @"INOP";
+    controllerStrings[1] = @"INOP";
+    controllerStrings[2] = @"INOP";
 }
 
 - (void) updateSpeedTape {
@@ -353,81 +358,52 @@
 }
 
 //Method for ControllerDelegate
-- (void)controllerUpdate:(DroneMessage_CommandUpdate *)update {
-    NSString* controllerString;
-
-    if(update != nil) {
-    //Yaw
-    switch (update.horizontalCommandOneOfCase) {
-        case DroneMessage_CommandUpdate_HorizontalCommand_OneOfCase_Heading:
-            [self setHnavMode: HEADING];
-            [self setTargetHeading: [NSNumber numberWithDouble: update.heading/64.0]];
-            controllerString = [NSString stringWithFormat: @"HDG: %3.0f ", self.heading.doubleValue];
-            break;
-
-        case DroneMessage_CommandUpdate_HorizontalCommand_OneOfCase_RateOfTurn:
-            [self setHnavMode: RATE_OF_TURN];
-            controllerString = [NSString stringWithFormat: @"TRN: %3.0f ", (100.0/127) * update.rateOfTurn];
-            break;
-
-        case DroneMessage_CommandUpdate_HorizontalCommand_OneOfCase_GPBUnsetOneOfCase:
-            NSLog(@"Invalid message received in PFDViewController: No HNAV");
-            break;
-        default:
-            break;
-    }
-
-    //Pitch
-    switch (update.verticalCommandOneOfCase) {
-            case DroneMessage_CommandUpdate_VerticalCommand_OneOfCase_Altitude:
-            [self setVnavMode: ALTITUDE];
-            [self setTargetAltitude: [NSNumber numberWithDouble: update.altitude/100.0]];
-            controllerString = [NSString stringWithFormat: @"%@ ALT: %3.0f ", controllerString, self.targetAltitude.doubleValue];
-            break;
-
-        case DroneMessage_CommandUpdate_VerticalCommand_OneOfCase_RateOfClimb:
-            [self setVnavMode: RATE_OF_CLIMB];
-            [self setTargetRateOfClimb: [NSNumber numberWithDouble: update.rateOfClimb/100.0]];
-            controllerString = [NSString stringWithFormat: @"%@ V/S: %3.0f ", controllerString, self.targetRateOfClimb.doubleValue];
-            break;
-
-        case DroneMessage_CommandUpdate_VerticalCommand_OneOfCase_PitchAngle:
-            [self setVnavMode: PITCH_ANGLE];
-            controllerString = [NSString stringWithFormat: @"%@ PIT: %3.0f ", controllerString, (100.0/127) * update.pitchAngle];
-            break;
-
-        case DroneMessage_CommandUpdate_HorizontalCommand_OneOfCase_GPBUnsetOneOfCase:
-            NSLog(@"Invalid message received in PFDViewController: No VNAV");
-            break;
-        default:
-            break;
-    }
-
-    //Thrust
-    switch (update.speedCommandOneOfCase) {
-        case DroneMessage_CommandUpdate_SpeedCommand_OneOfCase_Speed:
-            [self setMyThrustMode: SPEED];
-            [self setTargetSpeed: [NSNumber numberWithDouble: update.speed / 27.77777777]]; //Convert back from cm/s to km/h
-            controllerString = [NSString stringWithFormat: @"%@ SPD: %3.0f ", controllerString, self.targetSpeed.doubleValue];
-            break;
-
-        case DroneMessage_CommandUpdate_SpeedCommand_OneOfCase_Throttle:
-            [self setMyThrustMode: PASSTHROUGH_THRUST];
-            controllerString = [NSString stringWithFormat: @"%@ THR: %3.0f ", controllerString, update.throttle*(100/255.0)];
-            break;
-
-        case DroneMessage_CommandUpdate_HorizontalCommand_OneOfCase_GPBUnsetOneOfCase:
-            NSLog(@"Invalid message received in PFDViewController: No Thrust");
-            break;
-        default:
-            break;
-    }
-        label_controller.textColor = [NSColor whiteColor];
+-(void) controllerChangeToHnav: (HorizontalMode) hnav rateOfTurn: (NSNumber*) rateOfTurn heading: (NSNumber*) theHeading {
+    [self setHnavMode: hnav];
+    [self setTargetHeading: theHeading];
+    if(hnavMode == HEADING) {
+            controllerStrings[0] = [NSString stringWithFormat: @"HDG: %3.0f ", self.heading.doubleValue];
+    } else if (hnavMode == RATE_OF_TURN) {
+        controllerStrings[0]  = [NSString stringWithFormat: @"TRN: %3.0f ", 100.0 * rateOfTurn.doubleValue];
     } else {
-        controllerString = @"No Controller!";
-        label_controller.textColor = [NSColor redColor];
+        controllerStrings[0] = @"INVALID";
     }
+    [self updateControllerStrings];
+}
 
+-(void) controllerChangedToVnav: (VerticalMode) vnav pitch: (NSNumber*) thePitch climbRate: (NSNumber*) climbRate altitude: (NSNumber*) theAltitude {
+    [self setVnavMode: vnav];
+    [self setTargetRateOfClimb: climbRate];
+    [self setTargetAltitude: theAltitude];
+
+    if(vnavMode == ALTITUDE) {
+        controllerStrings[1] = [NSString stringWithFormat: @"ALT: %3.0f ", self.targetAltitude.doubleValue];
+    } else if (vnavMode == RATE_OF_CLIMB) {
+        controllerStrings[1] = [NSString stringWithFormat: @"V/S: %2.1f ", self.targetRateOfClimb.doubleValue];
+    } else if (vnavMode == PITCH_ANGLE) {
+        controllerStrings[1] = [NSString stringWithFormat: @"PIT: %3.0f ", 100.0 * thePitch.doubleValue];
+    } else {
+        controllerStrings[1] = @"INVALID";
+    }
+    [self updateControllerStrings];
+}
+
+-(void) controllerChangedToThrust: (ThrustMode) myUpdateThrustMode thrustSetting: (NSNumber*) myThrust speed: (NSNumber*) newTargetSpeed {
+    [self setMyThrustMode: myUpdateThrustMode];
+    [self setTargetSpeed: newTargetSpeed];
+
+    if(myThrustMode == PASSTHROUGH_THRUST) {
+        controllerStrings[2] = [NSString stringWithFormat: @"THR: %3.0f ", 100.0 * myThrust.doubleValue];
+    } else if (myThrustMode == SPEED) {
+        controllerStrings[2] = [NSString stringWithFormat: @"SPD: %3.0f ", self.targetSpeed.doubleValue];
+    } else {
+        controllerStrings[2] = @"INVALID";
+    }
+    [self updateControllerStrings];
+}
+
+- (void)updateControllerStrings {
+    NSString* controllerString = [NSString stringWithFormat: @"%@ %@ %@", controllerStrings[0], controllerStrings[1], controllerStrings[2]];
     label_controller.stringValue = controllerString;
     CGFloat fontSize = view_speedTape.bounds.size.width / 6;
     NSFont* theFont = [NSFont fontWithDescriptor: [NSFontDescriptor fontDescriptorWithName: @"Monaco" size: fontSize] size: fontSize];
@@ -441,19 +417,19 @@
         case PITCH_ANGLE:
         case PASSTHROUGH_VERTICAL:
             firstLine = @"ALT";
-            secondLine = [NSString stringWithFormat: @"%.0f", targetAltitude.doubleValue];
+            secondLine = [NSString stringWithFormat: @"%3.0f", targetAltitude.doubleValue];
             color = [NSColor cyanColor];
             break;
 
         case ALTITUDE:
             firstLine = @"ALT";
-            secondLine = [NSString stringWithFormat: @"%.0f", targetAltitude.doubleValue];
+            secondLine = [NSString stringWithFormat: @"%3.0f", targetAltitude.doubleValue];
             color = [NSColor greenColor];
             break;
 
         case RATE_OF_CLIMB:
             firstLine = @"V/S";
-            secondLine = [NSString stringWithFormat: @"%.0f", targetRateOfClimb.doubleValue];
+            secondLine = [NSString stringWithFormat: @"%2.1f", targetRateOfClimb.doubleValue];
             color = [NSColor greenColor];
             break;
 
@@ -472,6 +448,7 @@
     NSColor* color;
     switch (hnavMode) {
         case PASSTHROUGH_HORIZONTAL:
+        case RATE_OF_TURN:
             firstLine = @"HDG";
             secondLine = [NSString stringWithFormat: @"%.0f", targetHeading.doubleValue];
             color = [NSColor cyanColor];

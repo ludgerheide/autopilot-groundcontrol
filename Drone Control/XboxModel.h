@@ -28,7 +28,16 @@ typedef enum {
     SPEED
 } ThrustMode;
 
+@protocol controllerDelegate <NSObject>
+@required
+-(void) controllerChangedToVnav: (VerticalMode) vnav pitch: (NSNumber*) pitch climbRate: (NSNumber*) climbRate altitude: (NSNumber*) altitude;
+-(void) controllerChangeToHnav: (HorizontalMode) hnav rateOfTurn: (NSNumber*) rateOfTurn heading: (NSNumber*) heading;
+-(void) controllerChangedToThrust: (ThrustMode) myThrustMode thrustSetting: (NSNumber*) myThrust speed: (NSNumber*) speed;
+@end
+
 @interface XboxModel : NSObject <Xbox360ControllerDelegate>
+
+@property (weak) id<controllerDelegate> controllerDelegate;
 
 @property VerticalMode vnavMode;
 @property double targetRateOfClimb;

@@ -46,7 +46,7 @@
     myComms = [[CommsModel alloc] init];
     myComms.attitudeDelegate = self;
     myComms.positionDelegate = self;
-    myComms.controllerDelegate = myPFD;
+    myComms.controllerModel.controllerDelegate = myPFD;
     myComms.batteryDelegate = myPFD;
 }
 
