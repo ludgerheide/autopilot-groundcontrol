@@ -73,6 +73,7 @@
         //Create a protobuf with this stuff and send it
         DroneMessage* msg = [[DroneMessage alloc] init];
         msg.seaLevelPressure = thePressure.doubleValue;
+        msg.doPressureCompensation = YES;
         
         XBeeMessage* xBeeMsg = [[XBeeMessage alloc] initWithPayload: msg.data];
         

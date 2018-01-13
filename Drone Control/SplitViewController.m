@@ -54,7 +54,8 @@
 - (void)viewDidAppear {
     //Send sea level pressure to the plane
     NSAlert *alert = [[NSAlert alloc] init];
-    [alert setMessageText:@"Please enter the current sea level pressure"];
+    [alert setMessageText:@"Calibration"];
+    [alert setInformativeText:@"Please make sure the plane is on the ground at zero airspeed. Clicking OK will run the pitot calibration, this takes approximately four seconds."];
     [alert addButtonWithTitle:@"Ok"];
     [alert addButtonWithTitle:@"Cancel"];
     
