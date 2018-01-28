@@ -6,8 +6,8 @@
 //  Copyright © 2015 Ludger Heide. All rights reserved.
 //
 
-#define POLLING_INTERVAL 0.05 //20hz
-#define RSSI_INTERVAL 1.1 //1hz
+#define POLLING_INTERVAL 0.1 //10hz
+#define RSSI_INTERVAL 1.0 //1hz
 
 #define INSTRUMENTTIMEOUT 2
 
@@ -102,14 +102,14 @@
     //Create a protobuf with this stuff and send it
     DroneMessage* msg = [[DroneMessage alloc] init];
     
-    msg.currentCommand = update;
+    msg.inputCommand = update;
     
     XBeeMessage* xBeeMsg = [[XBeeMessage alloc] initWithPayload: msg.data];
     
     xBeeMsg.shouldAck = false;
     xBeeMsg.frameID = 0x00;
     
-    //[myPort sendData: xBeeMsg.encodeMessage];
+    [myPort sendData: xBeeMsg.encodeMessage];
 }
 
 //This method gets RSSI from the local and remite stations and sends them to the delgate

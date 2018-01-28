@@ -401,7 +401,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "PROTOC_PATH=/Users/ludger/Developer/protoc-3.3.0-osx-x86_64/bin/\n$PROTOC_PATH/protoc --objc_out=Drone\\ Control/ ../communicationProtocol.proto -I=.. && echo \"Protobufs regenrated\"";
+			shellScript = "PROTOC_PATH=/usr/local/bin/\n$PROTOC_PATH/protoc --objc_out=Drone\\ Control/ ../communicationProtocol.proto -I=.. && echo \"Protobufs regenrated\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 

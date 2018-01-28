@@ -221,7 +221,7 @@ const double defaultTargetSpeed = 30; //km/h
 
         case SPEED:
         {
-            retVal.speed = 27.77777777 * targetSpeed;
+            retVal.speed = round(27.77777777 * targetSpeed);
         }
             break;
 
